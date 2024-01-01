@@ -20,3 +20,4 @@ function calculateTime(n) {
 
     return time;
 }
+    
