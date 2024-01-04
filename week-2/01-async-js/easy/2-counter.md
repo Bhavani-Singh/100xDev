@@ -5,7 +5,7 @@ Without using setInterval, try to code a counter in Javascript. There is a hint 
 
 
 function timer(time) {
-  console.log(time);
+  console.log(time);    
 
   setTimeout(function() {
     timer(++time);
