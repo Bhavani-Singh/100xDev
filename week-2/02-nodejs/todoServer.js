@@ -41,9 +41,174 @@
  */
   const express = require('express');
   const bodyParser = require('body-parser');
+  const fs = require('fs');
+  
   
   const app = express();
+
+  const port = 3002;
   
   app.use(bodyParser.json());
+
+  function findIndex(id, todos) {
+    for(let i = 0; i < todos.length; i++) {
+      if(todos[i].id === id) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // get all todos
+  app.get("/todos", (req, res) => {
+    fs.readFile("todos.json", "utf8", (err, data) => {
+      if(err) {
+        console.log(err);
+        return;
+      }
+
+      const todos = JSON.parse(data);
+
+      res.status(200).json(todos);
+
+    })
+  })
+
+  // get a specific todo
+  app.get("/todos/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+
+    fs.readFile("todos.json", "utf8", (err, data) => {
+      if(err) {
+        console.log(err);
+        return;
+      }
+
+      const todos = JSON.parse(data);
+      const index = findIndex(id, todos);
+
+      if(index === -1) {
+        res.status(404).json({
+          "message": "Not found!",
+        });
+      }
+      else {        
+        res.status(200).json(todos[index]);
+      }
+    }) 
+    
+  })
+
+  // create new todo
+  app.post("/todos", (req, res) => {
+    
+    fs.readFile("todos.json", "utf8", (err, data) => {
+      if(err) {
+        console.log(err);
+        return
+      }
+
+      const todos = JSON.parse(data);
+
+      const todo = {
+        "id": Math.floor(Math.random() * 1000000),
+        "title": req.body.title,
+        "description": req.body.description
+      }
+  
+      todos.push(todo);
+
+      const todoData = JSON.stringify(todos);
+
+      fs.writeFile("todos.json", todoData, err => {
+        if(err) {
+          console.log(err);
+          return;
+        }
+        res.status(201).json({
+          id: todo.id
+        });
+      })
+    })
+  })
+
+  // change the status of the task
+  app.put("/todos/:id", (req, res) => {
+    fs.readFile("todos.json", "utf8", (err, data) => {
+      if(err) {
+        console.log(err);
+        res.status(500).json({
+          "message": "Internal server error!"
+        });
+      }
+
+      const todos = JSON.parse(data);
+      const id = parseInt(req.params.id);
+
+      const index = findIndex(id, todos);
+
+      if(index === -1) {
+        res.status(404).json({
+          message: "task not found!"
+        })
+      }
+      
+      todos[index].title = req.body.title;
+      todos[index].description = req.body.description;
+
+      const todosData = JSON.stringify(todos);
+
+      fs.writeFile("todos.json", todosData, (err) => {
+        if(err) {
+          console.log(err);
+          res.status(500).json({
+            message: "Internal server error!"
+          });
+        }
+
+        res.status(200).json({
+          message: "task update successfully!"
+        })
+      })
+      
+    })
+  })
+
+
+  // delete a specific task
+  app.delete("/todos/:id", (req, res) => {
+    const id = req.params.id;
+
+    fs.readFile("todos.json", "utf8", (err, data) => {
+      if(err) {
+        console.log(err);
+        res.status(500).json({
+          message: "Intenal server error!"
+        });
+      }
+
+      const todos = JSON.parse(data);
+      const index = findIndex(id, todos);
+
+      todos.pop(index);
+
+      const todoData = JSON.stringify(todos);
+
+      fs.writeFile("todos.json", todoData, (err) => {
+        if(err) {
+          console.log(err);
+        }
+
+        res.status(200).json({
+          message: "Delete Successfully!"
+        })
+      })
+    })
+  })
+
+
+  app.listen(port, () => {
+    console.log(`The server is up and running on the port: ${port}`);
+  })
   
   module.exports = app;
