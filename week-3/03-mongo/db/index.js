@@ -61,7 +61,8 @@ const CourseSchema = new mongoose.Schema({
         ref: 'Admin'
     },
     published: {
-        type: Boolean
+        type: Boolean,
+        default: true
     }
 });
 
