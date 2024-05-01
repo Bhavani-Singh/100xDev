@@ -1,8 +1,0 @@
-1. How use JWT in the code? 
-2. How to send the JWT in the header using POSTMAN?
-
-
-
-Revision:
-1. Add zod library for password checking.
-2.
