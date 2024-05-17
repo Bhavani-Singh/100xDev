@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script>
+    let globalId = 1;
+    let todoState = [];
+    let oldTodoState = [];
+
+    function addTodoToDom(todo) {
+      const parentDiv = document.getElementById('todos');
+      const child = document.createElement('div');
+      child.innerHTML = `<h1>${todo.title}</h1><p>${todo.description}</p>`;
+      parentDiv.appendChild(child);
+    }
+
+    function removeTodoFromDom(todo) {
+      // todo for id and removing it
+    }
+
+    function updateTodoInDom(oldTodo, newTodo) {
+      // oldTodo for id and newTodo for updating it
+
+    }
+
+    function updateState(newTodos) {
+      // calculate the diff b/w newTodos and oldTodos.
+      // More specifically, find out what todos are - 
+      // 1. added
+      // 2. deleted
+      // 3. updated
+      const added = [];
+      const deleted = [];
+      const updated = [];
+
+      for(const newTodo of newTodos) {
+        const oldTodo = oldTodoState.find(todo => todo.id === newTodo.id);
+
+        if(!oldTodo) {
+          added.push(newTodo);
+        }
+
+        if(JSON.stringify(newTodo) !== JSON.string(oldTodo)) {
+          updated.push({oldTodo, newTodo});
+        }
+      }
+
+      for(const oldTodo of oldTodoState) {
+        if(!newTodos.some(todo => todo.id === oldTodo.id)) {
+          deleted.push(oldTodo);
+        }
+      }
+
+      // calculate these 3 arrays
+      // call addTodo, removeTodo, updateTodo functions on each of the
+      // elements
+
+      for(todo of added) {
+        addTodoToDom(todo);
+      }
+
+      for({oldTodo, newTodo} of updated) {
+        updateTodoInDom(oldTodo, newTodo);
+      }
+
+      for(todo of deleted) {
+        removeTodoFromDom(todo);
+      }
+      
+      oldTodoState = newTodos;
+    }
+
+    function addTodo() {
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      todoState.push({
+        title: title,
+        description: description,
+        id: globalId++,
+      })
+      updateState(todoState);
+    }
+  </script>
+</head>
+
+<body>
+  <center>
+    <h1>Todo App</h1>
+    <input type="text" id="title" placeholder="Todo title"></input> <br /><br />
+    <input type="text" id="description" placeholder="Todo description"></input> <br /><br />
+    <button onclick="addTodo()">Add todo</button>
+    <br /> <br />
+
+    <h2>Todos:</h2>
+    <div id="todos">
+
+    </div>
+  </center>
+</body>
+
+</html>
