@@ -1,6 +1,11 @@
 const express = require('express');
+const connectToMongoDB = require('./config/mongo.config');
+require('dotenv').config()
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
+
+connectToMongoDB();
+
 app.get('/', (req, res) => {
     res.send('Hello Human!');
 })
