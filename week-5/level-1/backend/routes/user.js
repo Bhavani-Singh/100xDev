@@ -86,7 +86,7 @@ router.post('/signin', async (req, res) => {
 });
 
 
-router.post('/newuser', authenticateUser, async (req, res) => {
+router.post('/update', authenticateUser, async (req, res) => {
     const {name, designation, interest, linkedin, twitter} = req.body;
     const data = {
         name,
@@ -133,5 +133,42 @@ router.post('/newuser', authenticateUser, async (req, res) => {
     
 })
 
+
+router.post('/search', authenticateUser, async (req, res) => {
+    let query = req.body.username;
+
+    if(query === "") {
+        try{
+            const result = await User.find({});
+            return res.status(200).json({
+                result
+            })
+        }
+        catch(error) {
+            return res.status(500).json({
+                message: 'Error while searching the user'
+            })
+        }
+        
+    }
+    
+    query = '^' + query;
+
+    try{
+        const result = await User.find({username: {$regex: query, $options: 'i'}});
+
+        return res.status(200).json({
+            result
+        })
+    }
+    catch(error) {
+        return res.status(500).json({
+            message: 'Error while searching the user'
+        })
+    }
+    
+
+    
+})
 
 module.exports = router;
