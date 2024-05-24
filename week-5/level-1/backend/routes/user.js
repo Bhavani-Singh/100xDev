@@ -180,10 +180,41 @@ router.post('/search', authenticateUser, async (req, res) => {
         return res.status(500).json({
             message: 'Error while searching the user'
         })
-    }
-    
-
-    
+    }    
 })
 
+
+router.post('/delete/:username', authenticateUser, async (req, res) => {
+    const username = req.params.username;
+
+    const authenticatUsername = req.locals.info;
+
+    if(username === authenticatUsername) {
+        try{
+            const result = await User.deleteOne({username});
+    
+            if(result) {
+                res.status(200).json({
+                    message: 'User deleted successfully'
+                })
+            }
+            else {
+                res.status(400).json({
+                    message: 'Error while deleteing the user'
+                })
+            }
+        }
+        catch(error) {
+            res.status(500).json({
+                'message': 'Internal server error'
+            })
+        }
+    }
+    else {
+        res.status(400).json({
+            message: 'Bad request'
+        })
+    }
+    
+})
 module.exports = router;
