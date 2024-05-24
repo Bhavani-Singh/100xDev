@@ -4,7 +4,7 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWTSECRET;
 const router = Router();
-const { userNameValidation, passwordValidation, userInformation, nameValidation, designationValidation, interestValidation, linkedinValidation, twitterValidation }  = require('../validators/types');
+const { userNameValidation, passwordValidation, userInformation }  = require('../validators/types');
 const User = require('../models/user');
 const { authenticateUser } = require('../middlewares/userAuthenticate');
 
@@ -12,7 +12,6 @@ router.post('/signup', async (req, res) => {
     const {username, password} = req.body;
     const userNameValidationResult = userNameValidation.safeParse({username});
     const passwordValidationResult = passwordValidation.safeParse({password});
-    console.log(userNameValidationResult, passwordValidationResult);
 
     if(!userNameValidationResult.success) {
         return res.status(400).json({
@@ -45,7 +44,6 @@ router.post('/signup', async (req, res) => {
         res.status(400).json({
             message: 'Error while creating the user'
         })
-        // console.log(error);
     }
     
 });
@@ -86,8 +84,12 @@ router.post('/signin', async (req, res) => {
 });
 
 
+
 router.post('/update', authenticateUser, async (req, res) => {
+    
+    const username = req.locals.info;
     const {name, designation, interest, linkedin, twitter} = req.body;
+
     const data = {
         name,
         designation,
@@ -96,12 +98,7 @@ router.post('/update', authenticateUser, async (req, res) => {
         twitter
     };
 
-    const username = req.locals.info;
-    console.log(username);
     const userInfoValidate = userInformation.safeParse(data);
-
-
-    console.log(userInfoValidate);
 
     if(!userInfoValidate.success) {
         return res.status(400).json({
@@ -110,9 +107,10 @@ router.post('/update', authenticateUser, async (req, res) => {
     }
 
     try{
-        const result = await User.findOneAndUpdate({username},{$set: data});
-        console.log(result);
+        const result = await User.findOneAndUpdate({username}, {$set: data});
 
+
+        console.log(result);
         if(result) {
             return res.status(200).json({
                 message: 'Information updated successfully'
@@ -127,10 +125,27 @@ router.post('/update', authenticateUser, async (req, res) => {
     }
     catch(error) {
         return res.status(500).status({
-            message: 'Error while updating information'
+            message: 'Error while updating your information'
         })
     }
-    
+})
+
+router.get('/populate/:username', authenticateUser, async (req, res) => {
+    const username = req.locals.info;
+
+    try {
+        const result = await User.findOne({username}).select('name designation interest linkedin twitter');
+        
+        return res.status(200).json({
+            result
+        })
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'Internal server error'
+        })
+    }    
 })
 
 
@@ -155,7 +170,7 @@ router.post('/search', authenticateUser, async (req, res) => {
     query = '^' + query;
 
     try{
-        const result = await User.find({username: {$regex: query, $options: 'i'}});
+        const result = await User.find({username: {$regex: query, $options: 'i'}}).select('username name designation');
 
         return res.status(200).json({
             result

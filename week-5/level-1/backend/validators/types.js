@@ -18,7 +18,7 @@ const userInformation = z.object({
     designation: z.string().min(1),
     interest: z.array(z.string().min(1)),
     twitter: z.string().min(1),
-    linkedin: z.string().min(1)
+    linkedin: z.string().min(1),
 })
 
 
