@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema({
 
     linkedin: {
         type: String
+    },
+
+    image: {
+        type: String
     }
     
 });

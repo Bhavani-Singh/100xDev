@@ -2,11 +2,24 @@ const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 const jwtSecret = process.env.JWTSECRET;
 const router = Router();
 const { userNameValidation, passwordValidation, userInformation }  = require('../validators/types');
 const User = require('../models/user');
-const { authenticateUser } = require('../middlewares/userAuthenticate');
+const { authenticateUser } = require('../middlewares/authentication');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/profilepic')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({ storage: storage })
 
 router.post('/signup', async (req, res) => {
     const {username, password} = req.body;
@@ -74,7 +87,6 @@ router.post('/signin', async (req, res) => {
         })
     }
 
-
     const token = jwt.sign({username}, jwtSecret);
 
     return res.status(200).json({
@@ -85,12 +97,14 @@ router.post('/signin', async (req, res) => {
 
 
 
-router.post('/update', authenticateUser, async (req, res) => {
+router.post('/update', authenticateUser, upload.single('file'),async (req, res) => {
     
     const username = req.locals.info;
+    const image = req.file.filename;
     const {name, designation, interest, linkedin, twitter} = req.body;
 
     const data = {
+        image,
         name,
         designation,
         interest,
@@ -102,7 +116,7 @@ router.post('/update', authenticateUser, async (req, res) => {
 
     if(!userInfoValidate.success) {
         return res.status(400).json({
-            message: 'Invalid inputs'
+            message: 'Invalid input'
         })
     }
 
@@ -130,11 +144,11 @@ router.post('/update', authenticateUser, async (req, res) => {
     }
 })
 
-router.get('/populate/:username', authenticateUser, async (req, res) => {
-    const username = req.locals.info;
+router.get('/populate/:id', authenticateUser, async (req, res) => {
+    const id = req.params.id;
 
     try {
-        const result = await User.findOne({username}).select('name designation interest linkedin twitter');
+        const result = await User.findById({_id: id}).select('image name designation interest linkedin twitter');
         
         return res.status(200).json({
             result
@@ -172,9 +186,17 @@ router.post('/search', authenticateUser, async (req, res) => {
     try{
         const result = await User.find({username: {$regex: query, $options: 'i'}}).select('username name designation');
 
-        return res.status(200).json({
-            result
-        })
+        if(result) {
+            return res.status(200).json({
+                result
+            })
+        }
+        else {
+            return res.status(400).json({
+                message: 'User not found'
+            })
+        }
+        
     }
     catch(error) {
         return res.status(500).json({
@@ -184,37 +206,32 @@ router.post('/search', authenticateUser, async (req, res) => {
 })
 
 
-router.post('/delete/:username', authenticateUser, async (req, res) => {
-    const username = req.params.username;
+router.post('/delete', authenticateUser, async (req, res) => {
 
-    const authenticatUsername = req.locals.info;
+    const username = req.locals.info;
 
-    if(username === authenticatUsername) {
         try{
             const result = await User.deleteOne({username});
     
             if(result) {
-                res.status(200).json({
+                return res.status(200).json({
                     message: 'User deleted successfully'
                 })
             }
             else {
-                res.status(400).json({
-                    message: 'Error while deleteing the user'
+                return res.status(400).json({
+                    message: 'Unable to delete'
                 })
             }
         }
         catch(error) {
-            res.status(500).json({
+            return res.status(500).json({
                 'message': 'Internal server error'
             })
         }
-    }
-    else {
-        res.status(400).json({
-            message: 'Bad request'
-        })
-    }
+    
     
 })
+
+
 module.exports = router;
