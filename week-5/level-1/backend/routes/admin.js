@@ -2,12 +2,12 @@ const { Router } = require('express');
 const router = Router();
 const Admin = require('../models/admin');
 const User = require('../models/user');
-const {userInformation} = require('../validators/types');
+const {userInformation, userNameValidation} = require('../validators/types');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
-const { authenticateUser } = require('../middlewares/authentication');
-const jwtSecret = process.env.JWTSECRET;
+const { authenticateAdmin } = require('../middlewares/adminAuthentication');
+const jwtSecret = process.env.JWTADMINSECRET;
 
 
 const storage = multer.diskStorage({
@@ -40,7 +40,7 @@ router.post('/signin', async (req, res) => {
     }
 
     if(password === result.password) {
-        const token = jwt.sign({username}, jwtSecret);
+        const token = jwt.sign({username, role: "admin"}, jwtSecret);
 
         return res.status(200).json({
             token
@@ -54,7 +54,7 @@ router.post('/signin', async (req, res) => {
 
 });
 
-router.post('/search', authenticateUser, async (req, res) => {
+router.post('/search', authenticateAdmin, async (req, res) => {
     let query = req.body.username;
 
     if(query === "") {
@@ -98,7 +98,7 @@ router.post('/search', authenticateUser, async (req, res) => {
     }    
 })
 
-router.get('/populate/:id', authenticateUser, async (req, res) => {
+router.get('/populate/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -116,7 +116,7 @@ router.get('/populate/:id', authenticateUser, async (req, res) => {
     }    
 })
 
-router.post('/update/:id', authenticateUser, upload.single('file'), async (req, res) => {
+router.post('/update/:id', authenticateAdmin, upload.single('file'), async (req, res) => {
     
     const id = req.params.id;
     const {name, designation, interest, linkedin, twitter} = req.body;
@@ -166,7 +166,7 @@ router.post('/update/:id', authenticateUser, upload.single('file'), async (req, 
 
 
 
-router.post('/delete/:id', authenticateUser, async (req, res) => {
+router.post('/delete/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
 
     try{

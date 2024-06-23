@@ -4,11 +4,11 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
-const jwtSecret = process.env.JWTSECRET;
+const jwtSecret = process.env.JWTUSERSECRET;
 const router = Router();
 const { userNameValidation, passwordValidation, userInformation }  = require('../validators/types');
 const User = require('../models/user');
-const { authenticateUser } = require('../middlewares/authentication');
+const { authenticateUser } = require('../middlewares/userAuthentication');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -87,7 +87,7 @@ router.post('/signin', async (req, res) => {
         })
     }
 
-    const token = jwt.sign({username}, jwtSecret);
+    const token = jwt.sign({username, role: "user"}, jwtSecret);
 
     return res.status(200).json({
         token
