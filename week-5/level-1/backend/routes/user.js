@@ -12,7 +12,7 @@ const { authenticateUser } = require('../middlewares/userAuthentication');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'public/profilepic')
+      cb(null, 'public/profilepics')
     },
     filename: function (req, file, cb) {
       cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
@@ -118,13 +118,11 @@ router.post('/update', authenticateUser, upload.single('file'),async (req, res) 
         return res.status(400).json({
             message: 'Invalid input'
         })
-    }
+    }  
 
     try{
         const result = await User.findOneAndUpdate({username}, {$set: data});
 
-
-        console.log(result);
         if(result) {
             return res.status(200).json({
                 message: 'Information updated successfully'
@@ -155,7 +153,6 @@ router.get('/populate/:id', authenticateUser, async (req, res) => {
         })
     }
     catch(error) {
-        console.log(error);
         return res.status(500).json({
             message: 'Internal server error'
         })

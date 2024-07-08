@@ -12,7 +12,7 @@ const jwtSecret = process.env.JWTADMINSECRET;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'public/profilepic')
+      cb(null, 'public/profilepics')
     },
     filename: function (req, file, cb) {
       cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
@@ -121,7 +121,6 @@ router.post('/update/:id', authenticateAdmin, upload.single('file'), async (req,
     const id = req.params.id;
     const {name, designation, interest, linkedin, twitter} = req.body;
     const image = req.file.filename;
-
         
     const data = {
         image,
@@ -143,8 +142,6 @@ router.post('/update/:id', authenticateAdmin, upload.single('file'), async (req,
     try{
         const result = await User.findByIdAndUpdate({_id: id}, {$set: data});
 
-
-        console.log(result);
         if(result) {
             return res.status(200).json({
                 message: 'Information updated successfully'
@@ -184,7 +181,6 @@ router.post('/delete/:id', authenticateAdmin, async (req, res) => {
         }
     }
     catch(error) {
-        console.log(error);
         return res.status(500).json({
             'message': 'Internal server error'
         })

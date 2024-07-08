@@ -7,7 +7,9 @@ import UserSignin from './pages/user/UserSignin'
 import UserSignup from './pages/user/UserSignup'
 import { AuthProvider } from './hooks/useAuth'
 import ProtectedRoute from './components/ProtectedRoute'
-import Layout from './pages/Layout'
+import Card from './pages/admin/Card'
+import AdminHomePage from './pages/admin/AdminHomePage'
+import Form from './pages/admin/Form'
 
 function App() {
 
@@ -22,7 +24,17 @@ function App() {
           <Route path="/user/signup" element={<UserSignup />} />
           <Route path="/home" element={
             <ProtectedRoute>
-              <Layout />
+              <AdminHomePage />
+            </ProtectedRoute>
+          }/>
+          <Route path="/card" element={
+            <ProtectedRoute>
+              <Card />
+            </ProtectedRoute>
+          }/>
+          <Route path="/form" element={
+            <ProtectedRoute>
+              <Form />
             </ProtectedRoute>
           }/>
         </Routes>
