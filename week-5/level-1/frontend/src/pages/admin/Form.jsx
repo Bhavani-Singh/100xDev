@@ -19,7 +19,6 @@ function Form() {
 
     async function handleUpdate() {
         const formData = new FormData();
-        // const interests = [interest1, interest2, interest3];
         formData.append("file", file);
         formData.append("name",name);
         formData.append("designation", designation);

@@ -10,6 +10,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Card from './pages/admin/Card'
 import AdminHomePage from './pages/admin/AdminHomePage'
 import Form from './pages/admin/Form'
+import UserHomePage from './pages/user/UserHomePage'
+import UserForm from './pages/user/UserForm'
+import UserSearch from './pages/user/UserSearch'
+import UserCard from './pages/user/UserCard'
+
 
 function App() {
 
@@ -20,8 +25,6 @@ function App() {
         <Routes>
           <Route path="/" element={<UserSelection />} />
           <Route path="/admin/signin" element={<AdminSignin />} />
-          <Route path="/user/signin" element={<UserSignin />} />
-          <Route path="/user/signup" element={<UserSignup />} />
           <Route path="/home" element={
             <ProtectedRoute>
               <AdminHomePage />
@@ -37,6 +40,27 @@ function App() {
               <Form />
             </ProtectedRoute>
           }/>
+          <Route path="/user/signin" element={<UserSignin />} />
+          <Route path="/user/signup" element={<UserSignup />} />
+          <Route path="/user/home" element={
+            <ProtectedRoute>
+              <UserHomePage />
+            </ProtectedRoute>} />
+
+            <Route path="/user/form" element={
+            <ProtectedRoute>
+              <UserForm />
+            </ProtectedRoute>} />
+
+            <Route path="/user/search" element={
+            <ProtectedRoute>
+              <UserSearch />
+            </ProtectedRoute>} />
+
+            <Route path="/user/card" element={
+            <ProtectedRoute>
+              <UserCard />
+            </ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </div>

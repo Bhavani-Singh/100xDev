@@ -11,6 +11,7 @@ const PORT = process.env.PORT;
 connectToMongoDB();
 app.use(cors({}))
 app.use(bodyParser.json());
+app.use(express.static('public'));
 app.use('/admin', adminRoute);
 app.use('/user', userRoute);
 

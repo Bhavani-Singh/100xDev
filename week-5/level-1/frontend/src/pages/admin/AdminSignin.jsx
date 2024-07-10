@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -7,7 +7,7 @@ function AdminSignin() {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const {login} = useAuth();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     async function handleSignIn() {
         // make axios post 
@@ -20,8 +20,12 @@ function AdminSignin() {
                         }
                     });
 
-        const token = result.data.token;
-        await login({token});
+        if(result.status == 200) {
+            const token = result.data.token;
+            await login({token});
+            navigate("/home");
+        }
+        
     }
 
     return (

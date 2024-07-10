@@ -87,10 +87,13 @@ router.post('/signin', async (req, res) => {
         })
     }
 
+    const id = result._id;
+
     const token = jwt.sign({username, role: "user"}, jwtSecret);
 
     return res.status(200).json({
-        token
+        token,
+        id,
     })
 
 });

@@ -14,7 +14,7 @@ function Card() {
                         method: "post",
                         url: `http://localhost:3000/admin/delete/${state.id}`,
                         headers: {
-                            "authorization": user.token
+                            "authorization": user
                         }
                     });
 
@@ -42,6 +42,7 @@ function Card() {
 
         fetchUserDate();
     })
+
     return (
         <>
         <div style={{ margin: "10px" }}>

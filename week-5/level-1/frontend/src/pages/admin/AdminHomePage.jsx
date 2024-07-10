@@ -8,14 +8,6 @@ function AdminHomePage() {
     const [search, setSearch] = useState("");
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    // basically this is a search page
-    // in this page we will make the call for all users so a fetch call for the users info
-        // useEffect for making call to fetch all the users and then display it
-    // when typed on the search it should only display the search result
-    // when clicked on a user it should display the particular user
-    // add search bar 
-    // add logout button
-    // display all the users
 
 
     useEffect(() => {

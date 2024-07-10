@@ -14,6 +14,7 @@ function authenticateAdmin(req, res, next) {
             })
         }
 
+
         if(decoded.role !== "admin") {
             return res.status(404).json({
                 message: "forbidden"

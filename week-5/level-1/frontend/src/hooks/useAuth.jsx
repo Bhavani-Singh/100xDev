@@ -9,9 +9,8 @@ export function AuthProvider({children}) {
     const [ user, setUser ] = useLocalStorage("userToken", null);
     const navigate = useNavigate();
 
-     const login = async (data) => {
+    const login = async (data) => {
         await setUser(data);
-        navigate("/home");
     }
 
     const logout = () => {

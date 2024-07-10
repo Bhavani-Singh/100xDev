@@ -162,7 +162,6 @@ router.post('/update/:id', authenticateAdmin, upload.single('file'), async (req,
 })
 
 
-
 router.post('/delete/:id', authenticateAdmin, async (req, res) => {
     const id = req.params.id;
 
